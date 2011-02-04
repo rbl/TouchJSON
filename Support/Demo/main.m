@@ -41,7 +41,7 @@ int main(int argc, char **argv)
 
 	NSAutoreleasePool *theAutoreleasePool = [[NSAutoreleasePool alloc] init];
 
-	test_largedata();
+	test();
 
 	[theAutoreleasePool release];
 	//
@@ -51,10 +51,10 @@ int main(int argc, char **argv)
 static void test(void)
 	{
 	CJSONDeserializer *theDeserializer = [CJSONDeserializer deserializer];
-	NSString *jsonString = @"3.14";
+	NSString *jsonString = @"!";
 	NSData *jsonData = [jsonString dataUsingEncoding:NSUTF8StringEncoding];
 	NSError *error = nil;
-	NSNumber *theNumber = [theDeserializer deserialize:jsonData error:&error];
+	NSNumber *theNumber = [theDeserializer deserializeAsDictionary:jsonData error:&error];
 
 //    CJSONDeserializer *theDeserializer = [CJSONDeserializer deserializer];
 //    NSData *theData = [@"14399073641566209" dataUsingEncoding:NSUTF8StringEncoding];
