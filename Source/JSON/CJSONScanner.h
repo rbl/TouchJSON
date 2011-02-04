@@ -34,6 +34,7 @@
 	BOOL strictEscapeCodes;
     id nullObject;
 	NSStringEncoding allowedEncoding;
+    NSMutableDictionary *keyPool;
 }
 
 @property (readwrite, nonatomic, assign) BOOL strictEscapeCodes;
