@@ -29,10 +29,11 @@
 
 #import <Foundation/Foundation.h>
 
+#import "CJSONSerializer.h"
 #import "CJSONDeserializer.h"
-#import "CJSONScanner.h"
 
-void test(void);
+static void test(void);
+static void test_largedata(void);
 
 int main(int argc, char **argv)
 	{
@@ -40,14 +41,14 @@ int main(int argc, char **argv)
 
 	NSAutoreleasePool *theAutoreleasePool = [[NSAutoreleasePool alloc] init];
 
-	test();
+	test_largedata();
 
 	[theAutoreleasePool release];
 	//
 	return(0);
 	}
 
-void test(void)
+static void test(void)
 	{
 	CJSONDeserializer *theDeserializer = [CJSONDeserializer deserializer];
 	NSString *jsonString = @"3.14";
@@ -66,3 +67,43 @@ void test(void)
 	NSLog(@"Error: %g", [theNumber doubleValue]); 
 	NSLog(@"Error: %d", [theNumber unsignedLongLongValue] == 14399073641566209ULL); 
 	}
+
+static void test_largedata(void)
+	{
+    NSAutoreleasePool *thePool = [[NSAutoreleasePool alloc] init];
+    
+    NSMutableArray *theObjects = [NSMutableArray array];
+    id theValue = @"I am a value";
+    for (int N = 0; N != 10000; ++N)
+        {
+        NSDictionary *theDictionary = [NSDictionary dictionaryWithObjectsAndKeys:
+            theValue, @"key_0",
+            theValue, @"key_1",
+            theValue, @"key_2",
+            theValue, @"key_3",
+            theValue, @"key_4",
+            theValue, @"key_5",
+            theValue, @"key_6",
+            theValue, @"key_7",
+            NULL];
+
+        [theObjects addObject:theDictionary];
+        }
+    
+    NSData *theData = [[CJSONSerializer serializer] serializeArray:theObjects error:NULL];
+    NSLog(@"%ld", theData.length);
+    
+    [theData retain];
+    
+    [thePool release];
+    
+    [theData autorelease];
+    
+    sleep(2);
+    
+    NSArray *theArray = [[CJSONDeserializer deserializer] deserialize:theData error:NULL];
+    NSLog(@"%ld", [theArray count]);
+    
+    
+    
+    }
