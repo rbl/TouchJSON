@@ -302,17 +302,6 @@ else
             }
         else
             {
-            NSString *theKeyInPool = [keyPool objectForKey:theKey];
-            if (theKeyInPool != NULL)
-                {
-                theKey = theKeyInPool;
-                }
-            else
-                {
-                [keyPool setObject:theKey forKey:theKey];
-                }
-            
-            
             [theDictionary setValue:theValue forKey:theKey];
             }
 
@@ -486,6 +475,10 @@ bail:
 
 - (BOOL)scanJSONStringConstant:(NSString **)outStringConstant error:(NSError **)outError
     {
+    BOOL theResult = YES;
+    
+    NSAutoreleasePool *thePool = [[NSAutoreleasePool alloc] init];
+    
     NSUInteger theScanLocation = [self scanLocation];
 
     [self skipWhitespace];
@@ -503,8 +496,8 @@ bail:
             [theUserInfo addEntriesFromDictionary:self.userInfoForScanLocation];
             *outError = [NSError errorWithDomain:kJSONScannerErrorDomain code:-11 userInfo:theUserInfo];
             }
-        [theString release];
-        return(NO);
+        theResult = NO;
+        goto bail;
         }
 
     while ([self scanCharacter:'"'] == NO)
@@ -557,8 +550,8 @@ bail:
                                 [theUserInfo addEntriesFromDictionary:self.userInfoForScanLocation];
                                 *outError = [NSError errorWithDomain:kJSONScannerErrorDomain code:-12 userInfo:theUserInfo];
                                 }
-                            [theString release];
-                            return(NO);
+                            theResult = NO;
+                            goto bail;
                             }
                         theCharacter |= (theDigit << theShift);
                         }
@@ -577,8 +570,8 @@ bail:
                             [theUserInfo addEntriesFromDictionary:self.userInfoForScanLocation];
                             *outError = [NSError errorWithDomain:kJSONScannerErrorDomain code:-13 userInfo:theUserInfo];
                             }
-                        [theString release];
-                        return(NO);
+                        theResult = NO;
+                        goto bail;
                         }
                     }
                     break;
@@ -595,18 +588,24 @@ bail:
                 [theUserInfo addEntriesFromDictionary:self.userInfoForScanLocation];
                 *outError = [NSError errorWithDomain:kJSONScannerErrorDomain code:-14 userInfo:theUserInfo];
                 }
-            [theString release];
-            return(NO);
+            theResult = NO;
+            goto bail;
             }
 
         }
         
-    if (outStringConstant != NULL)
+bail:
+
+    [thePool release];
+    
+    if (theResult == YES && outStringConstant != NULL)
+        {
         *outStringConstant = [[theString copy] autorelease];
+        }
 
     [theString release];
 
-    return(YES);
+    return(theResult);
     }
 
 - (BOOL)scanJSONNumberConstant:(NSNumber **)outNumberConstant error:(NSError **)outError

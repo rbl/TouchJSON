@@ -41,7 +41,7 @@ int main(int argc, char **argv)
 
 	NSAutoreleasePool *theAutoreleasePool = [[NSAutoreleasePool alloc] init];
 
-	test();
+	test_largedata();
 
 	[theAutoreleasePool release];
 	//
@@ -70,36 +70,11 @@ static void test(void)
 
 static void test_largedata(void)
 	{
-    NSAutoreleasePool *thePool = [[NSAutoreleasePool alloc] init];
-    
-    NSMutableArray *theObjects = [NSMutableArray array];
-    id theValue = @"I am a value";
-    for (int N = 0; N != 10000; ++N)
-        {
-        NSDictionary *theDictionary = [NSDictionary dictionaryWithObjectsAndKeys:
-            theValue, @"key_0",
-            theValue, @"key_1",
-            theValue, @"key_2",
-            theValue, @"key_3",
-            theValue, @"key_4",
-            theValue, @"key_5",
-            theValue, @"key_6",
-            theValue, @"key_7",
-            NULL];
+    NSLog(@"Reading");
 
-        [theObjects addObject:theDictionary];
-        }
-    
-    NSData *theData = [[CJSONSerializer serializer] serializeArray:theObjects error:NULL];
-    NSLog(@"%ld", theData.length);
-    
-    [theData retain];
-    
-    [thePool release];
-    
-    [theData autorelease];
-    
-    sleep(2);
+    NSData *theData = [NSData dataWithContentsOfURL:[NSURL fileURLWithPath:@"/Users/schwa/Desktop/test.json"] options:NSDataReadingMapped error:NULL];
+
+    NSLog(@"Parsing");
     
     NSArray *theArray = [[CJSONDeserializer deserializer] deserialize:theData error:NULL];
     NSLog(@"%ld", [theArray count]);
