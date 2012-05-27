@@ -87,6 +87,10 @@ static NSData *kTrue = NULL;
         {
         return(YES);
         }
+    else if ([inObject isKindOfClass:[NSDate class]])
+        {
+        return(YES);
+        }
     else if ([inObject respondsToSelector:@selector(JSONDataRepresentation)])
         {
         return(YES);
@@ -125,6 +129,10 @@ static NSData *kTrue = NULL;
         {
         NSString *theString = [[[NSString alloc] initWithData:inObject encoding:NSUTF8StringEncoding] autorelease];
         theResult = [self serializeString:theString error:outError];
+        }
+    else if ([inObject isKindOfClass:[NSDate class]])
+        {
+        theResult = [self serializeDate:inObject error:outError];
         }
     else if ([inObject respondsToSelector:@selector(JSONDataRepresentation)])
         {
@@ -347,5 +355,25 @@ static NSData *kTrue = NULL;
 
     return(theData);
     }
+
+
+// TS: I wants me a date serializer
+- (NSData *)serializeDate:(NSDate *)inDate error:(NSError **)outError
+{
+    static NSDateFormatter* gDateFormatter;
+
+    // Try to make it into a date by parsing it
+    if (!gDateFormatter)
+    {
+        gDateFormatter = [[NSDateFormatter alloc] init];
+        gDateFormatter.timeZone = [NSTimeZone timeZoneForSecondsFromGMT:0];
+ 
+        // Configure it?
+        // Example timestamp = 2011-01-02T08:01:01.000Z
+        [gDateFormatter setDateFormat:@"yyyy-MM-dd'T'HH:mm:ss.SSS'Z'"];
+    }
+
+    return [self serializeString:[gDateFormatter stringFromDate:inDate] error:outError];
+}
 
 @end

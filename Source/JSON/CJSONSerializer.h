@@ -54,6 +54,9 @@ typedef NSUInteger EJSONSerializationOptions;
 - (NSData *)serializeArray:(NSArray *)inArray error:(NSError **)outError;
 - (NSData *)serializeDictionary:(NSDictionary *)inDictionary error:(NSError **)outError;
 
+// TS: Local addition because I wants it
+- (NSData *)serializeDate:(NSDate *)inDate error:(NSError **)outError;
+
 @end
 
 typedef enum {
