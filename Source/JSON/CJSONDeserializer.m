@@ -44,7 +44,7 @@ NSString *const kJSONDeserializerErrorDomain  = @"CJSONDeserializerErrorDomain";
 
 + (CJSONDeserializer *)deserializer
     {
-    return([[[self alloc] init] autorelease]);
+    return([[self alloc] init]);
     }
 
 - (id)init
@@ -57,10 +57,6 @@ NSString *const kJSONDeserializerErrorDomain  = @"CJSONDeserializerErrorDomain";
 
 - (void)dealloc
     {
-    [scanner release];
-    scanner = NULL;
-    //
-    [super dealloc];
     }
 
 #pragma mark -

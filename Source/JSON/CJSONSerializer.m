@@ -43,22 +43,22 @@ static NSData *kTrue = NULL;
     {
     if (self == [CJSONSerializer class])
         {
-        NSAutoreleasePool *thePool = [[NSAutoreleasePool alloc] init];
+            @autoreleasepool {
+                if (kNULL == NULL)
+                    kNULL = [[NSData alloc] initWithBytesNoCopy:(void *)"null" length:4 freeWhenDone:NO];
+                if (kFalse == NULL)
+                    kFalse = [[NSData alloc] initWithBytesNoCopy:(void *)"false" length:5 freeWhenDone:NO];
+                if (kTrue == NULL)
+                    kTrue = [[NSData alloc] initWithBytesNoCopy:(void *)"true" length:4 freeWhenDone:NO];
+                
+            }
 
-        if (kNULL == NULL)
-            kNULL = [[NSData alloc] initWithBytesNoCopy:(void *)"null" length:4 freeWhenDone:NO];
-        if (kFalse == NULL)
-            kFalse = [[NSData alloc] initWithBytesNoCopy:(void *)"false" length:5 freeWhenDone:NO];
-        if (kTrue == NULL)
-            kTrue = [[NSData alloc] initWithBytesNoCopy:(void *)"true" length:4 freeWhenDone:NO];
-
-        [thePool release];
         }
     }
 
 + (CJSONSerializer *)serializer
     {
-    return([[[self alloc] init] autorelease]);
+    return([[self alloc] init]);
     }
     
 - (BOOL)isValidJSONObject:(id)inObject
@@ -127,7 +127,7 @@ static NSData *kTrue = NULL;
         }
     else if ([inObject isKindOfClass:[NSData class]])
         {
-        NSString *theString = [[[NSString alloc] initWithData:inObject encoding:NSUTF8StringEncoding] autorelease];
+        NSString *theString = [[NSString alloc] initWithData:inObject encoding:NSUTF8StringEncoding];
         theResult = [self serializeString:theString error:outError];
         }
     else if ([inObject isKindOfClass:[NSDate class]])
@@ -173,7 +173,7 @@ static NSData *kTrue = NULL;
     {
     #pragma unused (outError)
     NSData *theResult = NULL;
-    switch (CFNumberGetType((CFNumberRef)inNumber))
+    switch (CFNumberGetType((__bridge CFNumberRef)inNumber))
         {
         case kCFNumberCharType:
             {
